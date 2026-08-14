@@ -15,7 +15,7 @@ export default function Home() {
         </p>
         <Link
           href="/products"
-          className="rounded bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-neutral-800"
+          className="rounded bg-brand-navy px-5 py-2.5 text-sm font-medium text-brand-white hover:opacity-90"
         >
           Shop the Collection
         </Link>
@@ -49,7 +49,7 @@ export default function Home() {
       </section>
 
       {/* Newsletter */}
-      <section className="flex flex-col gap-4 border-t border-black pt-12">
+      <section className="flex flex-col gap-4 border-t border-brand-black pt-12">
         <h2 className="text-xl font-semibold">Stay Up to Date</h2>
         <p className="text-sm text-neutral-600">
           Get notified when new memorabilia is added to the collection.

@@ -7,7 +7,7 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="flex flex-col gap-2 border border-neutral-200 p-4 hover:border-black"
+      className="flex flex-col gap-2 border border-neutral-200 p-4 hover:border-brand-navy"
     >
       <div className="aspect-square bg-neutral-100" />
       <h3 className="font-medium">{product.name}</h3>
