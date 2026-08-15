@@ -37,6 +37,14 @@ yarn-error.log*
 # vercel
 .vercel
 
+# editor swap/backup files (vim swap files for .env.local etc. can contain
+# secrets in plaintext — must never be committed)
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
