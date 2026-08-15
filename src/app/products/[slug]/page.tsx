@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getPublishedProductBySlug } from "@/lib/products";
+import AddToCartForm from "@/components/product/AddToCartForm";
 
 export const dynamic = "force-dynamic";
 
@@ -58,14 +59,7 @@ export default async function ProductPage({
             Sold Out
           </span>
         ) : (
-          <button
-            type="button"
-            disabled
-            className="w-fit rounded bg-brand-navy px-5 py-2.5 text-sm font-medium text-brand-white opacity-50"
-            title="Cart is coming in a later phase"
-          >
-            Add to Cart
-          </button>
+          <AddToCartForm product={product} />
         )}
       </div>
     </div>

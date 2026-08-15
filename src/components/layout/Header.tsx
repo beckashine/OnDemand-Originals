@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import CartCount from "./CartCount";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -30,6 +31,7 @@ export default function Header() {
               className="text-sm font-medium tracking-wide text-brand-black hover:text-brand-navy"
             >
               {link.label}
+              {link.href === "/cart" && <CartCount />}
             </Link>
           ))}
         </nav>
