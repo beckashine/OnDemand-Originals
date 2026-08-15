@@ -161,8 +161,28 @@ export async function updateProduct(
   redirect("/admin/products");
 }
 
+function storagePathFromPublicUrl(publicUrl: string): string | null {
+  const marker = "/product-images/";
+  const index = publicUrl.indexOf(marker);
+  if (index === -1) return null;
+  return publicUrl.slice(index + marker.length);
+}
+
 export async function deleteProduct(id: string) {
   const supabase = createAdminClient();
+
+  const { data: product } = await supabase
+    .from("products")
+    .select("image_url")
+    .eq("id", id)
+    .single();
+
+  const imagePath = product?.image_url ? storagePathFromPublicUrl(product.image_url) : null;
+  if (imagePath) {
+    // Best-effort: don't let a storage cleanup failure block deleting the listing itself.
+    await supabase.storage.from("product-images").remove([imagePath]);
+  }
+
   const { error } = await supabase.from("products").delete().eq("id", id);
 
   if (error) throw new Error(`Failed to delete: ${error.message}`);
