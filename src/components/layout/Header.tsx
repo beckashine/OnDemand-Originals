@@ -2,8 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 
 const NAV_LINKS = [
+  { href: "/", label: "Home" },
   { href: "/products", label: "Shop" },
   { href: "/cart", label: "Cart" },
+  { href: "/about", label: "About Us" },
 ];
 
 export default function Header() {
