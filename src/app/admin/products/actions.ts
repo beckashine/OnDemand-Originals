@@ -20,6 +20,13 @@ function isSport(value: unknown): value is Sport {
   return typeof value === "string" && (SPORTS as readonly string[]).includes(value);
 }
 
+function storagePathFromPublicUrl(publicUrl: string): string | null {
+  const marker = "/product-images/";
+  const index = publicUrl.indexOf(marker);
+  if (index === -1) return null;
+  return publicUrl.slice(index + marker.length);
+}
+
 type AdminClient = ReturnType<typeof createAdminClient>;
 
 async function uploadImage(supabase: AdminClient, file: File) {
@@ -144,7 +151,16 @@ export async function updateProduct(
   };
 
   const imageFile = formData.get("image");
+  let oldImageUrl: string | null = null;
+
   if (imageFile instanceof File && imageFile.size > 0) {
+    const { data: existing } = await supabase
+      .from("products")
+      .select("image_url")
+      .eq("id", id)
+      .single();
+    oldImageUrl = existing?.image_url || null;
+
     try {
       updates.image_url = await uploadImage(supabase, imageFile);
     } catch (err) {
@@ -156,16 +172,17 @@ export async function updateProduct(
 
   if (error) return { error: `Failed to save: ${error.message}` };
 
+  if (oldImageUrl) {
+    const oldPath = storagePathFromPublicUrl(oldImageUrl);
+    if (oldPath) {
+      // Best-effort: the row already saved successfully either way.
+      await supabase.storage.from("product-images").remove([oldPath]);
+    }
+  }
+
   revalidatePath("/admin/products");
   revalidatePath("/products");
   redirect("/admin/products");
-}
-
-function storagePathFromPublicUrl(publicUrl: string): string | null {
-  const marker = "/product-images/";
-  const index = publicUrl.indexOf(marker);
-  if (index === -1) return null;
-  return publicUrl.slice(index + marker.length);
 }
 
 export async function deleteProduct(id: string) {
