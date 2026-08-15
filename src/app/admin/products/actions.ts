@@ -160,3 +160,13 @@ export async function updateProduct(
   revalidatePath("/products");
   redirect("/admin/products");
 }
+
+export async function deleteProduct(id: string) {
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("products").delete().eq("id", id);
+
+  if (error) throw new Error(`Failed to delete: ${error.message}`);
+
+  revalidatePath("/admin/products");
+  revalidatePath("/products");
+}
