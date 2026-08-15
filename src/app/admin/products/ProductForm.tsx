@@ -134,7 +134,12 @@ export default function ProductForm({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={defaultValues.imageUrl} alt="" className="mb-2 h-32 w-32 object-cover" />
         )}
-        <input type="file" name="image" accept="image/png,image/jpeg,image/webp" className="text-sm" />
+        <input
+          type="file"
+          name="image"
+          accept="image/png,image/jpeg,image/webp"
+          className="rounded border border-neutral-300 px-3 py-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-brand-navy file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-brand-white"
+        />
       </label>
 
       <label className="flex items-center gap-2 text-sm">
