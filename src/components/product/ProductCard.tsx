@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/types/product";
 
@@ -9,10 +10,20 @@ export default function ProductCard({ product }: { product: Product }) {
     <Link href={`/products/${product.slug}`} className="group flex flex-col">
       {/* Frame */}
       <div className="border border-brand-black p-2">
-        <div className="flex aspect-[4/5] items-center justify-center border border-brand-navy bg-neutral-50">
-          <span className="text-xs uppercase tracking-widest text-neutral-400">
-            Photo Coming Soon
-          </span>
+        <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden border border-brand-navy bg-neutral-50">
+          {product.imageUrl ? (
+            <Image
+              src={product.imageUrl}
+              alt={`${product.signerName} signed ${product.sport.toLowerCase()} jersey`}
+              fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className="object-cover"
+            />
+          ) : (
+            <span className="text-xs uppercase tracking-widest text-neutral-400">
+              Photo Coming Soon
+            </span>
+          )}
         </div>
       </div>
 

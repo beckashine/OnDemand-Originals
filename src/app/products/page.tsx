@@ -1,11 +1,13 @@
 import ProductCard from "@/components/product/ProductCard";
 import SportFilterNav from "@/components/product/SportFilterNav";
-import { PLACEHOLDER_PRODUCTS } from "@/lib/placeholder-products";
+import { getPublishedProducts } from "@/lib/products";
 import { SPORTS, type Sport } from "@/types/product";
 
 export const metadata = {
   title: "Shop | On Demand Originals",
 };
+
+export const dynamic = "force-dynamic";
 
 function isSport(value: string | undefined): value is Sport {
   return SPORTS.includes(value as Sport);
@@ -16,13 +18,10 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<{ sport?: string }>;
 }) {
-  // TODO (Phase 5+): fetch published products from Supabase, filtered by sport server-side.
   const { sport } = await searchParams;
   const activeSport = isSport(sport) ? sport : undefined;
 
-  const products = activeSport
-    ? PLACEHOLDER_PRODUCTS.filter((product) => product.sport === activeSport)
-    : PLACEHOLDER_PRODUCTS;
+  const products = await getPublishedProducts(activeSport);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
