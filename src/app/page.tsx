@@ -1,60 +1,48 @@
 import Link from "next/link";
+import ProductCarousel from "@/components/home/ProductCarousel";
 import NewsletterForm from "@/components/newsletter/NewsletterForm";
+import { getPublishedProducts } from "@/lib/products";
 
-export default function Home() {
+export default async function Home() {
+  const newArrivals = await getPublishedProducts(undefined, undefined, 10);
+
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-12">
-      {/* Hero */}
-      <section className="flex flex-col items-start gap-4">
-        <h1 className="text-4xl font-bold tracking-tight">
-          Authentic Sports Memorabilia
-        </h1>
-        <p className="max-w-xl text-neutral-600">
-          {/* TODO: replace with approved copy once provided by client */}
-          One-of-a-kind and limited pieces, sourced and sold directly.
+    <div className="flex flex-col">
+      {/* New Arrivals carousel */}
+      <section aria-label="New arrivals" className="pt-9">
+        <p className="font-display mb-4 text-center text-sm tracking-[0.2em] text-neutral-500 uppercase">
+          New Arrivals
         </p>
+        <ProductCarousel products={newArrivals} />
+      </section>
+
+      <div className="mt-9 mb-16 flex justify-center">
         <Link
           href="/products"
-          className="rounded bg-brand-navy px-5 py-2.5 text-sm font-medium text-brand-white hover:opacity-90"
+          className="rounded-full bg-brand-navy px-10 py-4 text-sm font-extrabold tracking-wide text-brand-white uppercase hover:bg-brand-navy-dark"
         >
-          Shop the Collection
+          Shop Now
         </Link>
-      </section>
-
-      {/* New Arrivals */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold">New Arrivals</h2>
-        <p className="text-sm text-neutral-500">
-          {/* TODO: render latest published products here (Phase 3+) */}
-          Product grid coming soon.
-        </p>
-      </section>
-
-      {/* Featured */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold">Featured Memorabilia</h2>
-        <p className="text-sm text-neutral-500">
-          {/* TODO: render featured products here (Phase 3+) */}
-          Product grid coming soon.
-        </p>
-      </section>
-
-      {/* About */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold">About Us</h2>
-        <p className="max-w-2xl text-sm text-neutral-600">
-          {/* TODO: replace with approved About copy once provided by client */}
-          About section copy pending.
-        </p>
-      </section>
+      </div>
 
       {/* Newsletter */}
-      <section className="flex flex-col gap-4 border-t border-brand-black pt-12">
-        <h2 className="text-xl font-semibold">Stay Up to Date</h2>
-        <p className="text-sm text-neutral-600">
-          Get notified when new memorabilia is added to the collection.
-        </p>
-        <NewsletterForm />
+      <section className="stripe-overlay border-t-4 border-dashed border-brand-yellow border-b-4 bg-brand-black px-6 py-19 overflow-hidden">
+        <div className="relative mx-auto max-w-xl text-center">
+          <p className="mb-3.5 text-[16px] font-extrabold tracking-[0.28em] text-brand-yellow uppercase">
+            Join the team
+          </p>
+          <h2 className="font-display text-[40px] tracking-wide text-brand-white uppercase sm:text-[52px]">
+            Get In The <span className="text-brand-yellow">Huddle</span>
+          </h2>
+          <p className="mx-auto mt-4.5 max-w-md text-[20px] text-neutral-300">
+            Sign up for early access to new signings, member-only pricing, and first look at
+            limited-run frames.
+          </p>
+          <div className="mt-8">
+            <NewsletterForm />
+          </div>
+          <p className="mt-4 text-[16px] text-neutral-500">No spam. Unsubscribe anytime.</p>
+        </div>
       </section>
     </div>
   );

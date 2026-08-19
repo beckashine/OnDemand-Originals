@@ -36,7 +36,11 @@ function mapRowToProduct(row: ProductRow): Product {
 }
 
 /** Published products only — RLS enforces this even if the filter below is removed. */
-export async function getPublishedProducts(sport?: Sport): Promise<Product[]> {
+export async function getPublishedProducts(
+  sport?: Sport,
+  searchQuery?: string,
+  limit?: number,
+): Promise<Product[]> {
   const supabase = await createClient();
   let query = supabase.from("products").select("*").eq("published", true);
 
@@ -44,9 +48,21 @@ export async function getPublishedProducts(sport?: Sport): Promise<Product[]> {
     query = query.eq("sport", sport);
   }
 
-  const { data, error } = await query
-    .order("created_at", { ascending: false })
-    .returns<ProductRow[]>();
+  const trimmed = searchQuery?.trim();
+  if (trimmed) {
+    // Strip PostgREST filter-syntax characters so user input can't alter the .or() expression.
+    const safe = trimmed.replace(/[,()%]/g, " ").trim();
+    if (safe) {
+      query = query.or(`name.ilike.%${safe}%,signer_name.ilike.%${safe}%`);
+    }
+  }
+
+  query = query.order("created_at", { ascending: false });
+  if (limit) {
+    query = query.limit(limit);
+  }
+
+  const { data, error } = await query.returns<ProductRow[]>();
 
   if (error || !data) return [];
   return data.map(mapRowToProduct);

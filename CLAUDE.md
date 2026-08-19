@@ -3,9 +3,9 @@
 ## Business
 - Sports memorabilia ecommerce business.
 - Moving away from marketplaces (eBay, etc.) — this website is the primary sales channel.
-- Brand colors: black, white, royal/dark navy blue.
+- Brand colors: black (#111111), white, royal blue (#1B3F8F), with yellow (#F4C400) as a secondary accent (newsletter block, badges, CTA highlights). Fonts: Anton (display/headings) + Inter (body), both via Google Fonts.
 - Should feel like a premium collectibles business, not a generic ecommerce template. Emphasize the memorabilia itself over heavy graphics.
-- Actual logo file and approved project proposal have NOT been provided yet — do not invent brand details beyond what's written here until they're supplied.
+- Real logo file (`public/logo.JPEG`) and an approved homepage mockup (`media/index.html`) have been provided by the client — treat these as the source of truth for brand look, not the earlier placeholder description.
 
 ## Tech stack (decided)
 - **Frontend/backend**: Next.js (App Router)
@@ -48,7 +48,6 @@
 - Newsletter provider decision
 - Initial products: names, prices, condition, photos, descriptions, categories, starting inventory counts
 - Confirmation of which exact GoDaddy hosting plan the client has
-- Actual logo file
 - Any social links or legal/privacy requirements
 
 ## How to work with me on this
@@ -57,6 +56,6 @@
 - For every major step: tell me what we're building and why, tell me exactly what I need to do, give me the code/config, tell me where it goes, tell me how to test it, tell me what success looks like — then wait for my confirmation before moving to the next step.
 
 ## Status
-- Architecture decided: custom Next.js + Supabase + PayPal.
-- Hosting decision pending confirmation of the client's actual GoDaddy plan.
-- Nothing has been scaffolded yet. Next step: set up the Next.js project structure.
+- Architecture decided: custom Next.js + Supabase + PayPal. Hosting decision pending confirmation of the client's actual GoDaddy plan.
+- Built and working: product catalog + admin CMS (create/edit/delete, photo upload/cleanup), Shop page with sport filter and search, product detail pages, cart, checkout with real PayPal sandbox payment (server-side verified, inventory-safe), admin auth, homepage matching the client's approved mockup (new-arrivals carousel, newsletter block).
+- Not yet built: PayPal webhook (defense-in-depth only, not required), newsletter signup backend (provider not chosen), admin orders view, About page copy, production PayPal credentials, final hosting decision.
