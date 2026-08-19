@@ -28,11 +28,17 @@ create table if not exists products (
   signer_name text not null,
   condition text not null,
   authenticated boolean not null default true,
+  -- False means "not yet included in a sent newsletter digest". New rows
+  -- default to false so newly published products get picked up by the
+  -- next digest run; the backfill below marks pre-existing rows as already
+  -- notified so they aren't announced retroactively.
+  notified boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
 create index if not exists products_published_idx on products (published);
+create index if not exists products_notified_idx on products (notified) where notified = false;
 create index if not exists products_sport_idx on products (sport);
 
 drop trigger if exists products_set_updated_at on products;

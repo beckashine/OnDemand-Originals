@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Product } from "@/types/product";
+import { countPendingDigestProducts } from "@/lib/newsletter-digest";
 import { deleteProduct } from "./actions";
 import DeleteProductButton from "./DeleteProductButton";
+import SendNewsletterButton from "./SendNewsletterButton";
 
 export const metadata = {
   title: "Manage Products | Admin",
@@ -22,11 +24,14 @@ type ProductRow = {
 
 export default async function AdminProductsPage() {
   const supabase = createAdminClient();
-  const { data: products, error } = await supabase
-    .from("products")
-    .select("id, name, price, quantity, published, sport, signer_name")
-    .order("created_at", { ascending: false })
-    .returns<ProductRow[]>();
+  const [{ data: products, error }, pendingCount] = await Promise.all([
+    supabase
+      .from("products")
+      .select("id, name, price, quantity, published, sport, signer_name")
+      .order("created_at", { ascending: false })
+      .returns<ProductRow[]>(),
+    countPendingDigestProducts(),
+  ]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
@@ -39,6 +44,8 @@ export default async function AdminProductsPage() {
           Add Product
         </Link>
       </div>
+
+      <SendNewsletterButton pendingCount={pendingCount} />
 
       {error && <p className="text-sm text-red-600">Failed to load products: {error.message}</p>}
 

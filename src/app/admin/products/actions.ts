@@ -122,6 +122,9 @@ export async function createProduct(
 
   if (error) return { error: `Failed to save: ${error.message}` };
 
+  // New rows default to notified = false, so a published product is
+  // automatically picked up by the next newsletter digest run.
+
   revalidatePath("/admin/products");
   revalidatePath("/products");
   redirect("/admin/products");
@@ -137,6 +140,12 @@ export async function updateProduct(
 
   const supabase = createAdminClient();
 
+  const { data: existing } = await supabase
+    .from("products")
+    .select("image_url, published")
+    .eq("id", id)
+    .single();
+
   const updates: Record<string, unknown> = {
     name: parsed.fields.name,
     description: parsed.fields.description,
@@ -150,17 +159,16 @@ export async function updateProduct(
     authenticated: parsed.fields.authenticated,
   };
 
+  // Re-entering "published" (including re-publishing something that was
+  // unpublished after an earlier notify) queues it for the next digest run.
+  if (!existing?.published && parsed.fields.published) {
+    updates.notified = false;
+  }
+
   const imageFile = formData.get("image");
-  let oldImageUrl: string | null = null;
+  const oldImageUrl = existing?.image_url || null;
 
   if (imageFile instanceof File && imageFile.size > 0) {
-    const { data: existing } = await supabase
-      .from("products")
-      .select("image_url")
-      .eq("id", id)
-      .single();
-    oldImageUrl = existing?.image_url || null;
-
     try {
       updates.image_url = await uploadImage(supabase, imageFile);
     } catch (err) {
@@ -172,7 +180,7 @@ export async function updateProduct(
 
   if (error) return { error: `Failed to save: ${error.message}` };
 
-  if (oldImageUrl) {
+  if (updates.image_url && oldImageUrl) {
     const oldPath = storagePathFromPublicUrl(oldImageUrl);
     if (oldPath) {
       // Best-effort: the row already saved successfully either way.
