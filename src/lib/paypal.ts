@@ -71,3 +71,57 @@ export async function capturePayPalOrder(paypalOrderId: string): Promise<PayPalC
   const data = await res.json();
   return { status: data.status, raw: data };
 }
+
+export type WebhookHeaders = {
+  authAlgo: string | null;
+  certUrl: string | null;
+  transmissionId: string | null;
+  transmissionSig: string | null;
+  transmissionTime: string | null;
+};
+
+/**
+ * Verifies a webhook request actually came from PayPal (not a forged POST
+ * to our endpoint) using PayPal's own verification API, per their docs —
+ * this is the standard way to authenticate incoming webhooks server-side.
+ */
+export async function verifyWebhookSignature(
+  headers: WebhookHeaders,
+  webhookEvent: unknown
+): Promise<boolean> {
+  const webhookId = process.env.PAYPAL_WEBHOOK_ID;
+  if (!webhookId) throw new Error("PAYPAL_WEBHOOK_ID is not configured");
+
+  if (
+    !headers.authAlgo ||
+    !headers.certUrl ||
+    !headers.transmissionId ||
+    !headers.transmissionSig ||
+    !headers.transmissionTime
+  ) {
+    return false;
+  }
+
+  const accessToken = await getAccessToken();
+
+  const res = await fetch(`${PAYPAL_API_BASE}/v1/notifications/verify-webhook-signature`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      auth_algo: headers.authAlgo,
+      cert_url: headers.certUrl,
+      transmission_id: headers.transmissionId,
+      transmission_sig: headers.transmissionSig,
+      transmission_time: headers.transmissionTime,
+      webhook_id: webhookId,
+      webhook_event: webhookEvent,
+    }),
+  });
+
+  if (!res.ok) return false;
+  const data = await res.json();
+  return data.verification_status === "SUCCESS";
+}

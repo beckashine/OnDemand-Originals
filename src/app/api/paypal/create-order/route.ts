@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createPayPalOrder } from "@/lib/paypal";
+import { getClientIp, isRateLimited } from "@/lib/rate-limit";
 
 type RequestItem = { productId: string; quantity: number };
 
@@ -17,6 +18,11 @@ type CustomerInfo = {
 };
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  if (isRateLimited(`checkout-create:${ip}`, 10)) {
+    return NextResponse.json({ error: "Too many requests. Try again later." }, { status: 429 });
+  }
+
   let body: { items?: RequestItem[]; customer?: CustomerInfo };
   try {
     body = await request.json();
