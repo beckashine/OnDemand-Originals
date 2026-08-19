@@ -16,9 +16,28 @@ const anton = Anton({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const description =
+  "Authentic sports memorabilia. One-of-a-kind and limited pieces, sourced and sold directly.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "On Demand Originals",
-  description: "Authentic sports memorabilia.",
+  description,
+  openGraph: {
+    title: "On Demand Originals",
+    description,
+    siteName: "On Demand Originals",
+    url: siteUrl,
+    type: "website",
+    images: [{ url: "/icon.png", width: 512, height: 512, alt: "On Demand Originals" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "On Demand Originals",
+    description,
+    images: ["/icon.png"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

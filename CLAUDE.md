@@ -29,14 +29,14 @@
 6. **PayPal payments**: sandbox mode during development; never mark an order paid just because the customer reached a success page — verify payment server-side; handle failed/cancelled/incomplete payments; secrets live in environment variables only, never in frontend code; separate dev/test credentials from production.
 7. **Inventory**: many items are one-of-a-kind. Zero-inventory items must be genuinely unpurchasable (enforced server-side, not just a hidden button) and shown as sold out. Consider race conditions / duplicate simultaneous purchases explicitly.
 8. **Orders (admin)**: view orders, customer info, products purchased, order total, payment status, order date, fulfillment status. Keep this simple — no enterprise order management system.
-9. **Newsletter**: signup on homepage. Automated "new product published → subscriber email" workflow. Provider not yet chosen (Brevo vs. Mailchimp — evaluate cost/simplicity/automation/ease of client use before deciding). Email should include branding, product image, name, short description, price if appropriate, link to product page, clear CTA.
+9. **Newsletter**: signup on homepage. "New product published → subscriber email" workflow, batched into a digest (not one email per product — every published-but-not-yet-announced product gets bundled into a single email listing all of them). Client-triggered via a "Send Newsletter Now" button in the admin Products page (decided 2026-08-19 — client wants manual control over timing rather than a fixed automatic schedule), showing how many products are pending announcement. Provider: **Brevo** (chosen 2026-08-19 — free tier includes automation and 300 emails/day with no practical contact cap; Mailchimp's free tier no longer supports automation at all, requiring their $90/mo plan, which conflicts with the no-retainer budget). Email includes branding, product image, name, short description, price, link to product page, clear CTA.
 10. **Admin/CMS**: client must be able to add/edit products, upload images, change price/inventory, publish/unpublish, mark sold out, and view orders — all without touching code. Since we're not using an existing platform's built-in admin, this needs to be built as part of the app. Keep it as simple as it can be while still covering these needs.
 
 ## Security requirements
 - Never expose API keys/secrets in frontend code — environment variables only.
 - Verify PayPal payment status server-side before marking any order as paid.
 - Admin routes need real authentication and authorization.
-- Input validation on all forms; rate limiting where it makes sense (checkout, newsletter signup).
+- Input validation on all forms; rate limiting where it makes sense (checkout, newsletter signup) — done (`src/lib/rate-limit.ts`, in-memory per-IP).
 - Never store raw payment card data.
 
 ## Information still needed from the client (don't invent placeholders beyond what's marked TBD above)
@@ -45,10 +45,10 @@
 - Tax requirements
 - Shipping rates or shipping provider
 - PayPal Business account info
-- Newsletter provider decision
 - Initial products: names, prices, condition, photos, descriptions, categories, starting inventory counts
 - Confirmation of which exact GoDaddy hosting plan the client has
 - Any social links or legal/privacy requirements
+- Brevo account (API key, subscriber list ID, verified sender email) — integration is built, just needs real credentials in `.env.local`
 
 ## How to work with me on this
 - I'm a beginner going through this for the first time — explain plainly, don't assume prior dev experience.
@@ -58,4 +58,6 @@
 ## Status
 - Architecture decided: custom Next.js + Supabase + PayPal. Hosting decision pending confirmation of the client's actual GoDaddy plan.
 - Built and working: product catalog + admin CMS (create/edit/delete, photo upload/cleanup), Shop page with sport filter and search, product detail pages, cart, checkout with real PayPal sandbox payment (server-side verified, inventory-safe), admin auth, homepage matching the client's approved mockup (new-arrivals carousel, newsletter block).
-- Not yet built: PayPal webhook (defense-in-depth only, not required), newsletter signup backend (provider not chosen), admin orders view, About page copy, production PayPal credentials, final hosting decision.
+- Built and working: newsletter signup + new-product-published digest emails via Brevo, triggered by a "Send Newsletter Now" button in admin (real credentials live in `.env.local`, verified end-to-end including multi-product batching and the manual trigger). A `/api/cron/newsletter-digest` endpoint (protected by `CRON_SECRET`) also exists and works if called, for a possible future automatic schedule — not currently wired to anything, since the client chose manual control instead. Also built: admin orders view.
+- Built and working: rate limiting on checkout + newsletter endpoints, PayPal webhook (`/api/webhooks/paypal`, verifies signatures, defense-in-depth — not wired up in PayPal's dashboard yet since that needs a real public URL), real favicon/icons generated from the logo, SEO/Open Graph/Twitter meta tags.
+- Not yet built: About page copy, production PayPal credentials, final hosting decision (all waiting on the client).
