@@ -47,23 +47,6 @@ npm install
 npm run dev
 ```
 
-Copy `.env.local.example` to `.env.local` and fill in real values — see the comments in that file for where each key comes from (Supabase project settings, PayPal Developer dashboard, Brevo API keys):
-
-```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-NEXT_PUBLIC_PAYPAL_CLIENT_ID=
-PAYPAL_CLIENT_SECRET=
-PAYPAL_API_BASE=
-PAYPAL_WEBHOOK_ID=
-BREVO_API_KEY=
-BREVO_LIST_ID=
-BREVO_SENDER_EMAIL=
-NEXT_PUBLIC_SITE_URL=
-CRON_SECRET=
-```
-
 ## Status
 
 Architecture decided: Next.js + Supabase + PayPal. Product catalog, admin CMS, cart, checkout (PayPal sandbox, server-verified), newsletter signup + manual digest, and admin auth are built and working. Still pending: final About copy, production PayPal credentials, and a confirmed hosting plan.
