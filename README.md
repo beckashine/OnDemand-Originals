@@ -1,5 +1,7 @@
 > **Work in progress** — this project is under active development.
 
+**Live:** [on-demand-originals.netlify.app](https://on-demand-originals.netlify.app)
+
 # On Demand Originals
 
 Full-stack ecommerce site for a sports memorabilia business, built to replace marketplace selling (eBay, etc.) with a direct-to-customer store. Product catalog, cart, PayPal checkout, inventory-safe one-of-a-kind items, an admin CMS, and a newsletter digest system — all custom-built rather than assembled from a platform.

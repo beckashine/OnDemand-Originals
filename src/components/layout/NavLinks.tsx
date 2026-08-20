@@ -20,7 +20,7 @@ export default function NavLinks() {
           <Link
             key={link.href}
             href={link.href}
-            className={`relative pb-1 text-[15px] ${
+            className={`relative pb-1 text-[17px] ${
               active
                 ? "font-bold text-brand-black after:absolute after:inset-x-0 after:-bottom-1 after:h-[3px] after:rounded after:bg-brand-navy"
                 : "font-medium text-neutral-700 hover:text-brand-navy"
